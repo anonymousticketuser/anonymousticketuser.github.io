@@ -1,1 +1,565 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Cash Advance Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .bottom-result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .top-right-result {
+    position: absolute;
+    top: 100px;
+    right: calc(50% - 400px);
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: fit-content;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Merchant Cash Advance Calculator</h1>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Amount Advanced:</td>
+                    <td><input type="text" id="amount-advanced" value="$0"></td>
+                </tr>
+                <tr>
+                    <td>Purchased Receivables:</td>
+                    <td><input type="text" id="total-purchaseablesReceived" value="$0"></td>
+                </tr>
+                <tr>
+                    <td>Revenue Split (%):</td>
+                    <td><input type="text" id="revenue-split" value="0%"></td>
+                </tr>
+                <tr>
+                    <td>Same Sales Each Month?</td>
+                    <td><input type="checkbox" id="same-sales"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Sales</th>
+                    <th>Revenue Diverted</th>
+                    <th>Excess Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Month 1</td>
+                    <td><input type="text" id="monthly-sales-1" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-1" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-1" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 2</td>
+                    <td><input type="text" id="monthly-sales-2" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-2" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-2" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 3</td>
+                    <td><input type="text" id="monthly-sales-3" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-3" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-3" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 4</td>
+                    <td><input type="text" id="monthly-sales-4" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-4" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-4" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 5</td>
+                    <td><input type="text" id="monthly-sales-5" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-5" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-5" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 6</td>
+                    <td><input type="text" id="monthly-sales-6" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-6" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-6" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 7</td>
+                    <td><input type="text" id="monthly-sales-7" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-7" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-7" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 8</td>
+                    <td><input type="text" id="monthly-sales-8" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-8" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-8" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 9</td>
+                    <td><input type="text" id="monthly-sales-9" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-9" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-9" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 10</td>
+                    <td><input type="text" id="monthly-sales-10" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-10" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-10" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 11</td>
+                    <td><input type="text" id="monthly-sales-11" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-11" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-11" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 12</td>
+                    <td><input type="text" id="monthly-sales-12" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-12" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-12" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 13</td>
+                    <td><input type="text" id="monthly-sales-13" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-13" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-13" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 14</td>
+                    <td><input type="text" id="monthly-sales-14" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-14" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-14" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Month 15</td>
+                    <td><input type="text" id="monthly-sales-15" value="$0"></td>
+                    <td><input type="text" id="revenue-diverted-15" value="$0" disabled></td>
+                    <td><input type="text" id="excess-revenue-15" value="$0" disabled></td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td><input type="text" id="total-monthly-sales" value="$0" disabled></td>
+                    <td><input type="text" id="total-revenue-diverted" value="$0" disabled></td>
+                    <td><input type="text" id="total-excess-revenue" value="$0" disabled></td>
+                </tr>        
+            </tbody>
+        </table>
+        <button id="calculate-btn">Calculate</button>
+        <button id="clear-btn">Clear</button>
+        <div class="bottom-result" id="bottom-result"></div>
+    <!-- Top right result display -->
+        <div class="top-right-result" id="top-right-result"></div>
+    </div>
+    <script>
+function XIRR(values, dates, guess) {
+  // Calculates the resulting amount
+  var irrResult = function(values, dates, rate) {
+    var r = rate + 1;
+    var result = values[0];
+    for (var i = 1; i < values.length; i++) {
+      result += values[i] / Math.pow(r, (dates[i] - dates[0]) / (1000 * 60 * 60 * 24 * 365));
+    }
+    return result;
+  }
+
+  // Calculates the first derivation
+  var irrResultDeriv = function(values, dates, rate) {
+    var r = rate + 1;
+    var result = 0;
+    for (var i = 1; i < values.length; i++) {
+      var frac = (dates[i] - dates[0]) / (1000 * 60 * 60 * 24 * 365);
+      result -= frac * values[i] / Math.pow(r, frac + 1);
+    }
+    return result;
+  }
+
+  // Check that values contains at least one positive value and one negative value
+  var positive = false;
+  var negative = false;
+  for (var i = 0; i < values.length; i++) {
+    if (values[i] > 0) positive = true;
+    if (values[i] < 0) negative = true;
+  }
+  
+  // Return error if values does not contain at least one positive value and one negative value
+  if (!positive || !negative) return '#NUM!';
+
+  // Initialize guess and resultRate
+  guess = (typeof guess === 'undefined') ? 0.1 : guess;
+  var resultRate = guess;
+  
+  // Set maximum epsilon for end of iteration
+  var epsMax = 1e-10;
+  
+  // Set maximum number of iterations
+  var iterMax = 50;
+
+  // Implement Newton's method
+  var newRate, epsRate, resultValue;
+  var iteration = 0;
+  var contLoop = true;
+  do {
+    resultValue = irrResult(values, dates, resultRate);
+    newRate = resultRate - resultValue / irrResultDeriv(values, dates, resultRate);
+    epsRate = Math.abs(newRate - resultRate);
+    resultRate = newRate;
+    contLoop = (epsRate > epsMax) && (Math.abs(resultValue) > epsMax);
+  } while(contLoop && (++iteration < iterMax));
+
+  if(contLoop) return '#NUM!';
+
+  // Return internal rate of return
+  return resultRate;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener for "Calculate" button
+    document.getElementById("calculate-btn").addEventListener("click", function() {
+        if (!validateInputs()) {
+            document.getElementById("bottom-result").innerText = "Error: Amount Advanced must be smaller than Purchased Receivables.";
+            document.getElementById("top-right-result").innerText = "Error: Amount Advanced must be smaller than Purchased Receivables.";
+            
+            return;
+        }
+        calculateMCAAdvance();
+    });
+
+    // Function to validate inputs
+    function validateInputs() {
+        let amountAdvanced = parseFloat(document.getElementById("amount-advanced").value.replace(/[^\d\.]/g,''));
+        let totalpurchaseablesReceived = parseFloat(document.getElementById("total-purchaseablesReceived").value.replace(/[^\d\.]/g,''));
+        let revenueSplit = parseFloat(document.getElementById("revenue-split").value.replace("%", ""));
+        if (isNaN(revenueSplit) || revenueSplit < 1 || revenueSplit > 100) {
+            alert("Error: Revenue Split must be between 1 and 100.");
+            return false;
+        }
+        if (amountAdvanced > totalpurchaseablesReceived) {
+            alert("Error: Amount Advanced must be smaller than Purchased Receivables.");
+            return false;
+        }
+        return true;
+    }
+
+    // Add event listener for "Clear" button
+    document.getElementById("clear-btn").addEventListener("click", function() {
+        clearFields();
+    });
+
+    // Add event listener for "Same Sales Each Month?" checkbox
+    document.getElementById("same-sales").addEventListener("change", function() {
+        if (this.checked) {
+            // Disable monthly sales inputs
+            for (let i = 2; i <= 15; i++) {
+                document.getElementById("monthly-sales-" + i).disabled = true;
+            }
+            
+            // Update other months to mirror Month 1 Sales
+            let month1SalesValue = parseFloat(document.getElementById("monthly-sales-1").value.replace(/[^\d\.]/g,''));
+            
+            for (let i = 2; i <= 15; i++) {
+                document.getElementById("monthly-sales-" + i).value = "$" + month1SalesValue.toFixed(0);
+                
+            }
+        } else {
+            // Enable monthly sales inputs
+            for (let i = 2; i <= 15; i++) {
+                document.getElementById("monthly-sales-" + i).disabled = false;
+            }
+        }
+        // Format currency inputs
+        formatCurrencyInputs();
+    });
+
+    // Add event listener for "Month 1 Sales" input
+    document.getElementById("monthly-sales-1").addEventListener("input", function() {
+        // Check if checkbox is checked
+        if (document.getElementById("same-sales").checked) {
+            // Update other months to mirror Month 1 Sales
+            let month1SalesValue = parseFloat(this.value.replace(/[^\d\.]/g,''));
+            for (let i = 2; i <= 15; i++) {
+                document.getElementById("monthly-sales-" + i).value = "$" + month1SalesValue.toFixed(0);
+                formatCurrencyInputs();
+            }
+        }
+        // Format currency input
+        formatCurrencyInput(this);
+    });
+
+     // Add event listener for all other input fields
+     let inputs = document.querySelectorAll("input[type='text']");
+    inputs.forEach(input => {
+        input.addEventListener("input", function() {
+            formatCurrencyInput(this); // Format currency input after change
+        });
+    });
+
+    function updateBottomResultDisplay(resultText) {
+            document.getElementById("bottom-result").innerText = resultText;
+        }
+
+    // Function to update the result in the top right display
+    function updateTopRightResultDisplay(resultText) {
+        document.getElementById("top-right-result").innerText = resultText;
+    }
+    function addCommasToNumber(number) {
+        // Check if the number is greater than or equal to 1000
+        if (number >= 1000) {
+            // Convert the number to a string and add commas
+            return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        } else {
+            // Return the number without commas
+            return number.toFixed(2);
+        }
+    }
+
+    function calculateMCAAdvance() {
+        clearFieldsonCalculate()
+        let amountAdvanced = parseFloat(document.getElementById("amount-advanced").value.replace(/[^\d\.]/g, ''));
+        let totalpurchaseablesReceived = parseFloat(document.getElementById("total-purchaseablesReceived").value.replace(/[^\d\.]/g, ''));
+        let monthlySales = [];
+        for (let i = 1; i <= 15; i++) {
+            let monthlySalesInput = document.getElementById("monthly-sales-" + i).value.replace(/[^\d\.]/g, '');
+            monthlySales.push(parseFloat(monthlySalesInput));
+        }
+        let revenueSplit = parseFloat(document.getElementById("revenue-split").value);
+        // Check if amount advanced is greater than total purchaseablesReceived
+        if (amountAdvanced > totalpurchaseablesReceived) {
+            alert("Amount Advanced cannot be greater than Purchased Receivables.");
+            return;
+        }
+        // Check if revenue split is between 1 and 100
+        if (revenueSplit < 1 || revenueSplit > 100 || isNaN(revenueSplit)) {
+            alert("Revenue Split must be between 1 and 100.");
+            return;
+        }
+        let { impliedAnnualizedDiscountRate, recoupIndex, netCashFlows, grossCashFlows } = calculateImpliedAnnualizedDiscountRate(amountAdvanced, totalpurchaseablesReceived, monthlySales);
+        if ((monthlySales.reduce((acc, val) => acc + val) * (revenueSplit / 100)) < totalpurchaseablesReceived) {
+            let grossCashFlowsIfNotRecouped = [-amountAdvanced, ...monthlySales];
+            // Calculate and update Excess Revenue column
+            for (let i = 1; i <= grossCashFlowsIfNotRecouped.length - 1; i++) {
+                let monthlySalesValue = monthlySales[i - 1]; // Adjust index to match array
+                let revenueDivertedValue = grossCashFlowsIfNotRecouped[i] * (revenueSplit/100) ?? 0; // Use 0 if netCashFlows[i - 1] is undefined
+                document.getElementById("revenue-diverted-" + i).value = "$" + revenueDivertedValue.toFixed(2);
+                let excessRevenueValue = monthlySalesValue - revenueDivertedValue;
+                document.getElementById("excess-revenue-" + i).value = "$" + excessRevenueValue.toFixed(2);
+            }
+            // Update Total section
+            // Calculate total excess revenue
+            let totalMonthlySales = 0;
+            for (let i = 1; i <= 15; i++) {
+                let monthlySalesValue = parseFloat(document.getElementById("monthly-sales-" + i).value.replace(/[^\d\.]/g, ''));
+                totalMonthlySales += monthlySalesValue;
+            }
+            document.getElementById("total-monthly-sales").value = "$" + totalMonthlySales.toFixed(2);
+            let totalRevenueDiverted = 0;
+            for (let i = 1; i <= 15; i++) {
+                let monthlyRevenueDiverted = parseFloat(document.getElementById("revenue-diverted-" + i).value.replace(/[^\d\.]/g, ''));
+                totalRevenueDiverted += monthlyRevenueDiverted;  
+            }
+            document.getElementById("total-revenue-diverted").value = "$" + totalRevenueDiverted.toFixed(2);
+            let totalExcessRevenue = totalMonthlySales - totalRevenueDiverted;
+            document.getElementById("total-excess-revenue").value = "$" + totalExcessRevenue.toFixed(2);
+            formatCurrencyInputs();
+            alert("Purchased Receivables Not Recouped.");            
+            document.getElementById("bottom-result").innerText = "Purchased Receivables Not Recouped";
+            document.getElementById("top-right-result").innerText = "Purchased Receivables Not Recouped";
+            return;
+
+        } else {
+            document.getElementById("bottom-result").innerText = "Implied Annualized Discount Rate: " + addCommasToNumber(impliedAnnualizedDiscountRate) + "%";
+            document.getElementById("top-right-result").innerText = "Implied Annualized Discount Rate: " + addCommasToNumber(impliedAnnualizedDiscountRate) + "%";
+
+            // Update Revenue Diverted column
+            for (let i = 1; i <= recoupIndex; i++) {
+                document.getElementById("revenue-diverted-" + i).value = "$" + netCashFlows[i].toFixed(2);
+            }
+
+            // Calculate and update Excess Revenue column
+            for (let i = 1; i <= grossCashFlows.length - 1; i++) {
+                let monthlySalesValue = monthlySales[i - 1]; // Adjust index to match array
+                let revenueDivertedValue = netCashFlows[i] ?? 0; // Use 0 if netCashFlows[i - 1] is undefined
+                let excessRevenueValue = monthlySalesValue - revenueDivertedValue;
+                document.getElementById("excess-revenue-" + i).value = "$" + excessRevenueValue.toFixed(2);
+            }
+
+            // Update Total section
+            // Calculate total excess revenue
+            let totalMonthlySales = 0;
+            for (let i = 1; i <= 15; i++) {
+                let monthlySalesValue = parseFloat(document.getElementById("monthly-sales-" + i).value.replace(/[^\d\.]/g, ''));
+                totalMonthlySales += monthlySalesValue;
+            }
+            document.getElementById("total-monthly-sales").value = "$" + totalMonthlySales.toFixed(2);
+            let totalRevenueDiverted = totalpurchaseablesReceived;
+            document.getElementById("total-revenue-diverted").value = "$" + totalRevenueDiverted.toFixed(2);
+            let totalExcessRevenue = totalMonthlySales - totalRevenueDiverted;
+            document.getElementById("total-excess-revenue").value = "$" + totalExcessRevenue.toFixed(2);
+            formatCurrencyInputs();
+        }
+    }
+
+    // Function to clear all input fields
+    function clearFields() {
+        document.getElementById("amount-advanced").value = "$0";
+        document.getElementById("total-purchaseablesReceived").value = "$0";
+        for (let i = 1; i <= 15; i++) {
+            document.getElementById("monthly-sales-" + i).value = "$0";
+            document.getElementById("revenue-diverted-" + i).value = "$0";
+            document.getElementById("excess-revenue-" + i).value = "$0";
+        }
+        document.getElementById("total-monthly-sales").value = "$0";
+        document.getElementById("total-revenue-diverted").value = "$0";
+        document.getElementById("total-excess-revenue").value = "$0";
+        document.getElementById("revenue-split").value = "0%";
+        document.getElementById("same-sales").checked = false;
+        document.getElementById("bottom-result").innerText = "";
+        document.getElementById("top-right-result").innerText = "";
+        // Format currency inputs after clearing
+        formatCurrencyInputs();
+    }
+    function clearFieldsonCalculate() {
+        for (let i = 1; i <= 15; i++) {
+            document.getElementById("revenue-diverted-" + i).value = "$0";
+            document.getElementById("excess-revenue-" + i).value = "$0";
+        }
+        document.getElementById("total-monthly-sales").value = "$0";
+        document.getElementById("total-revenue-diverted").value = "$0";
+        document.getElementById("total-excess-revenue").value = "$0";
+        document.getElementById("bottom-result").innerText = "";
+        document.getElementById("top-right-result").innerText = "";
+        
+    }
+    // Function to calculate implied annualized discount rate
+    function calculateImpliedAnnualizedDiscountRate(amountAdvanced, totalpurchaseablesReceived, monthlySales) {
+        // Calculate the sum of all cash flows
+        let grossCashFlows = [-amountAdvanced, ...monthlySales];
+        let revenueSplitPercentage = parseFloat(document.getElementById("revenue-split").value.replace("%", ""));
+        let cumulativeSum = 0;
+        let recoupIndex = 0;
+        // Calculate the recoup index based on revenue split
+        for (let i = 1; i < grossCashFlows.length; i++) {
+            cumulativeSum += grossCashFlows[i] * (revenueSplitPercentage / 100);
+            if (cumulativeSum >= totalpurchaseablesReceived) {
+                recoupIndex = i;
+                grossCashFlows[recoupIndex] = (grossCashFlows[i] * (revenueSplitPercentage / 100)) - ((cumulativeSum - totalpurchaseablesReceived));
+                break;
+            }
+        }
+        // Calculate net cash flows based on revenue split
+        let netCashFlows = [grossCashFlows[0]];
+        for (let i = 1; i < recoupIndex; i++) {
+            netCashFlows.push(grossCashFlows[i] * (revenueSplitPercentage / 100));
+        }
+        netCashFlows.push(grossCashFlows[recoupIndex]);
+        // Generate dates representing the first day of each month
+        let startDate = new Date(2024, 0, 1); // January 1, 2024
+        let dates = [];
+        for (let i = 0; i < netCashFlows.length; i++) {
+            let date = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+            dates.push(date);
+        }
+        let xirrValue = XIRR(netCashFlows, dates);
+
+        impliedAnnualizedDiscountRate = xirrValue * 100; // Return XIRR in percentage
+
+        return { impliedAnnualizedDiscountRate, recoupIndex, netCashFlows, grossCashFlows };
+    }
+
+    function formatCurrencyInputs() {
+        // Format currency inputs on page load
+        let inputs = document.querySelectorAll("input[type='text']");
+        inputs.forEach(input => {
+            if (input.id !== "revenue-split") { // Exclude revenue split input
+                let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+                value = parseFloat(value).toFixed(0); // Convert to fixed-point notation with 0 decimal places
+                value = "$" + numberWithCommas(value); // Add dollar sign and commas
+                input.value = value;
+            }
+        });
+    }
+
+    // Function to format currency input
+    function formatCurrencyInput(input) {
+        let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+        value = parseFloat(value).toFixed(0); // Convert to fixed-point notation with 0 decimal places
+        value = "$" + numberWithCommas(value); // Add dollar sign and commas
+        input.value = value;
+    }
+
+    // Function to add commas to number
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Format currency inputs on page load
+    formatCurrencyInputs();
+
+    // Add event listener for "Revenue Split" input
+    document.getElementById("revenue-split").addEventListener("input", function() {
+        formatRevenueSplitInput(this);
+    });
+
+    // Function to format revenue split input
+    function formatRevenueSplitInput(input) {
+        let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+        value = parseFloat(value).toFixed(0); // Convert to fixed-point notation with 2 decimal places
+        value = value + "%"; // Add percentage sign
+        input.value = value;
+    }
+
+document.getElementById("revenue-split").addEventListener("input", function() {
+    formatRevenueSplitInput(this);
+});
+});
+</script>
+</body>
+</html>
