@@ -200,66 +200,6 @@
         <div class="top-right-result" id="top-right-result"></div>
     </div>
     <script>
-function XIRR(values, dates, guess) {
-  // Calculates the resulting amount
-  var irrResult = function(values, dates, rate) {
-    var r = rate + 1;
-    var result = values[0];
-    for (var i = 1; i < values.length; i++) {
-      result += values[i] / Math.pow(r, (dates[i] - dates[0]) / (1000 * 60 * 60 * 24 * 365));
-    }
-    return result;
-  }
-
-  // Calculates the first derivation
-  var irrResultDeriv = function(values, dates, rate) {
-    var r = rate + 1;
-    var result = 0;
-    for (var i = 1; i < values.length; i++) {
-      var frac = (dates[i] - dates[0]) / (1000 * 60 * 60 * 24 * 365);
-      result -= frac * values[i] / Math.pow(r, frac + 1);
-    }
-    return result;
-  }
-
-  // Check that values contains at least one positive value and one negative value
-  var positive = false;
-  var negative = false;
-  for (var i = 0; i < values.length; i++) {
-    if (values[i] > 0) positive = true;
-    if (values[i] < 0) negative = true;
-  }
-  
-  // Return error if values does not contain at least one positive value and one negative value
-  if (!positive || !negative) return '#NUM!';
-
-  // Initialize guess and resultRate
-  guess = (typeof guess === 'undefined') ? 0.1 : guess;
-  var resultRate = guess;
-  
-  // Set maximum epsilon for end of iteration
-  var epsMax = 1e-10;
-  
-  // Set maximum number of iterations
-  var iterMax = 50;
-
-  // Implement Newton's method
-  var newRate, epsRate, resultValue;
-  var iteration = 0;
-  var contLoop = true;
-  do {
-    resultValue = irrResult(values, dates, resultRate);
-    newRate = resultRate - resultValue / irrResultDeriv(values, dates, resultRate);
-    epsRate = Math.abs(newRate - resultRate);
-    resultRate = newRate;
-    contLoop = (epsRate > epsMax) && (Math.abs(resultValue) > epsMax);
-  } while(contLoop && (++iteration < iterMax));
-
-  if(contLoop) return '#NUM!';
-
-  // Return internal rate of return
-  return resultRate;
-}
 
 document.addEventListener("DOMContentLoaded", function() {
     // Add event listener for "Calculate" button
@@ -381,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("Revenue Split must be between 1 and 100.");
             return;
         }
-        let { impliedAnnualizedDiscountRate, recoupIndex, netCashFlows, grossCashFlows } = calculateImpliedAnnualizedDiscountRate(amountAdvanced, totalpurchaseablesReceived, monthlySales);
+        let { recoupIndex, netCashFlows, grossCashFlows} = calculateRecoupIndex(amountAdvanced, totalpurchaseablesReceived, monthlySales);
         if ((monthlySales.reduce((acc, val) => acc + val) * (revenueSplit / 100)) < totalpurchaseablesReceived) {
             let grossCashFlowsIfNotRecouped = [-amountAdvanced, ...monthlySales];
             // Calculate and update Excess Revenue column
@@ -415,10 +355,10 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
 
         } else {
+            const impliedAnnualizedDiscountRate = calculateAnnualizedDiscountRate(grossCashFlows, netCashFlows);
             document.getElementById("bottom-result").innerText = "Implied Annualized Discount Rate: " + addCommasToNumber(impliedAnnualizedDiscountRate) + "%";
             document.getElementById("top-right-result").innerText = "Implied Annualized Discount Rate: " + addCommasToNumber(impliedAnnualizedDiscountRate) + "%";
 
-            // Update Revenue Diverted column
             for (let i = 1; i <= recoupIndex; i++) {
                 document.getElementById("revenue-diverted-" + i).value = "$" + netCashFlows[i].toFixed(2);
             }
@@ -444,8 +384,8 @@ document.addEventListener("DOMContentLoaded", function() {
             let totalExcessRevenue = totalMonthlySales - totalRevenueDiverted;
             document.getElementById("total-excess-revenue").value = "$" + totalExcessRevenue.toFixed(2);
             formatCurrencyInputs();
-        }
-    }
+
+    }}
 
     // Function to clear all input fields
     function clearFields() {
@@ -479,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
     }
     // Function to calculate implied annualized discount rate
-    function calculateImpliedAnnualizedDiscountRate(amountAdvanced, totalpurchaseablesReceived, monthlySales) {
+    function calculateRecoupIndex(amountAdvanced, totalpurchaseablesReceived, monthlySales) {
         // Calculate the sum of all cash flows
         let grossCashFlows = [-amountAdvanced, ...monthlySales];
         let revenueSplitPercentage = parseFloat(document.getElementById("revenue-split").value.replace("%", ""));
@@ -507,12 +447,39 @@ document.addEventListener("DOMContentLoaded", function() {
             let date = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
             dates.push(date);
         }
-        let xirrValue = XIRR(netCashFlows, dates);
 
-        impliedAnnualizedDiscountRate = xirrValue * 100; // Return XIRR in percentage
-
-        return { impliedAnnualizedDiscountRate, recoupIndex, netCashFlows, grossCashFlows };
+        return {  recoupIndex, netCashFlows, grossCashFlows};
     }
+    
+
+    function calculateAnnualizedDiscountRate(grossCashFlows, netCashFlows) {
+    let impliedAnnualizedDiscountRate = 0.1; // Initial guess for impliedAnnualizedDiscountRate
+    const tolerance = 0.0001; // Tolerance for balance to be considered zero
+    let balance = 1;
+
+    // Function to calculate loan balance for given impliedAnnualizedDiscountRate
+    function calculateLoanBalance(impliedAnnualizedDiscountRate) {
+        let balance = -grossCashFlows[0];
+        for (let i = 1; i < netCashFlows.length; i++) {
+            const monthlyInterest = impliedAnnualizedDiscountRate / 12 / 100;
+            const monthlyPayment = netCashFlows[i];
+            const interestPaid = balance * monthlyInterest;
+            const principalPaid = monthlyPayment - interestPaid;
+            balance -= principalPaid;
+        }
+        return balance;
+    }
+
+    // Newton-Raphson method iteration
+    while (Math.abs(balance) > tolerance) {
+        balance = calculateLoanBalance(impliedAnnualizedDiscountRate);
+        const derivative = (calculateLoanBalance(impliedAnnualizedDiscountRate + 0.0001) - balance) / 0.0001;
+        impliedAnnualizedDiscountRate -= balance / derivative;
+    }
+
+    return impliedAnnualizedDiscountRate;
+}
+
 
     function formatCurrencyInputs() {
         // Format currency inputs on page load
@@ -526,6 +493,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+
 
     // Function to format currency input
     function formatCurrencyInput(input) {
